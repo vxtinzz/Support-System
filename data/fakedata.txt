@@ -1,0 +1,20 @@
+1;101;monitor piscando;3
+2;102;sem mouse;1
+3;103;teclado com teclas faltando;2
+4;104;impressora não conecta;4
+5;105;login bloqueado;5
+6;106;wifi instável na sala 3;3
+7;107;erro de tela azul ao iniciar;5
+8;108;sistema lento após atualização;3
+9;109;não imprime frente e verso;2
+10;110;scanner com linhas na digitalização;2
+11;111;áudio do notebook sem som;3
+12;112;cabo HDMI danificado;1
+13;113;aplicativo trava ao abrir;4
+14;114;senha expirada;2
+15;115;projeto não sincroniza com drive;4
+16;116;backup falhou na última noite;5
+17;117;porta USB não reconhece pendrive;2
+18;118;camera de reunião piscando;3
+19;119;acesso remoto com alta latência;4
+20;120;alerta de antivírus falso positivo;2
