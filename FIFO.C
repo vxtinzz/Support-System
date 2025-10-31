@@ -1,9 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+//#include "../include/fakedata.h"
+#include <time.h>
 
-typedef struct Ticket
-{
+const char *SimulateDescription[20] = {
+    "monitor piscando",
+    "teclado com teclas faltando",
+    "impressora não conecta",
+    "login bloqueado",
+    "wifi instável na sala 3",
+    "erro de tela azul ao iniciar",
+    "sistema não abre após atualização",
+    "computador reiniciando sozinho",
+    "email corporativo não sincroniza",
+    "acesso negado ao servidor interno",
+    "mouse parando de funcionar",
+    "planilha corrompida no Excel",
+    "fone de ouvido sem som",
+    "microfone não detectado no Zoom",
+    "erro ao salvar arquivo no drive compartilhado",
+    "programa de ponto não carrega",
+    "pendrive não reconhecido",
+    "lentidão extrema ao inicializar",
+    "janela travada no navegador",
+    "erro de autenticação no sistema interno"
+};
+
+const int requestersIDs[10] = {
+    101, 102, 103, 104, 105,
+    106, 107, 108, 109, 110
+};
+
+typedef struct Ticket{
     int id;
     int requesterId;
     char description[200];
@@ -11,15 +40,13 @@ typedef struct Ticket
     Ticket *next;
 } Ticket;
 
-typedef struct
-{
+typedef struct{
     Ticket *begin;
     Ticket *end;
     int tot;
-} Fila;
+} Queue;
 
-void AddTicket(Fila *f)
-{
+void AddTicket(Queue *f){
     Ticket *newTicket = (Ticket *)malloc(sizeof(Ticket));
     if (!newTicket)
     {
@@ -29,7 +56,7 @@ void AddTicket(Fila *f)
 
     int lastId = 0;
     FILE *arq;
-    arq = fopen("../data/tickets.txt", "r");
+    arq = fopen("../../data/tickets.txt", "r");
 
     if (arq != NULL)
     {
@@ -68,7 +95,7 @@ void AddTicket(Fila *f)
     f->end = newTicket;
     f->tot++;
 
-    arq = fopen("../data/tickets.txt", "a");
+    arq = fopen("../../data/tickets.txt", "a");
     if (arq == NULL)
     {
         printf("Failed to open file for writing.\n");
@@ -80,11 +107,10 @@ void AddTicket(Fila *f)
     return;
 }
 
-void ShowAllTickets()
-{
+void ShowAllTickets(){
     Ticket newTicket;
     FILE *arq;
-    arq = fopen("../data/tickets.txt", "r");
+    arq = fopen("../../data/tickets.txt", "r");
     if (arq == NULL)
     {
         printf("File Empty!\n");
@@ -102,11 +128,10 @@ void ShowAllTickets()
     fclose(arq);
 }
 
-void FindTicketbyId(int id)
-{
+void FindTicketbyId(int id){
     Ticket Ticket;
     FILE *arq;
-    arq = fopen("../data/tickets.txt", "r");
+    arq = fopen("../../data/tickets.txt", "r");
     if (arq == NULL)
     {
         printf("Failed to open file!\n");
@@ -133,14 +158,13 @@ void FindTicketbyId(int id)
     fclose(arq);
 }
 
-void AttendNextTicket()
-{
+void AttendNextTicket(){
     // declaration
     FILE *arq;
     FILE *temp;
-    arq = fopen("../data/tickets.txt", "r");
-    temp = fopen("../data/temp.txt", "w");
-    Fila *f = (Fila *)malloc(sizeof(Fila));
+    arq = fopen("../../data/tickets.txt", "r");
+    temp = fopen("../../data/temp.txt", "w");
+    Queue *f = (Queue *)malloc(sizeof(Queue));
     Ticket *bigPriority = (Ticket *)malloc(sizeof(Ticket));
     Ticket ticket;
     Ticket *aux;
@@ -188,24 +212,130 @@ void AttendNextTicket()
         fclose(arq);
         fclose(temp);
 
-        remove("../data/tickets.txt");
-        rename("../data/temp.txt", "../data/tickets.txt");
+        remove("../../data/tickets.txt");
+        rename("../../data/temp.txt", "../../data/tickets.txt");
 
-        printf("Ticket #%d Attended Sucessfully!!\n", bigPriority->id);
+        system("cls");
+        printf("\n\n\nTicket #%d Attended Sucessfully!!\n\n\n", bigPriority->id);
     }
 }
 
-void AttendTicketById(int id)
-{
+void AttendTicketById(int id){
+    FILE *arq;
+    FILE *temp;
+    arq = fopen("../../data/tickets.txt", "r");
+    temp = fopen("../../data/temp.txt", "w");
+    Ticket loadTicket;
+    if(arq != NULL){
+        while(fscanf(arq, "%d;%d;%199[^;];%d\n",&loadTicket.id, &loadTicket.requesterId, loadTicket.description, &loadTicket.priority) != EOF){
+            if(loadTicket.id != id){
+                fprintf(temp, "%d;%d;%s;%d\n", loadTicket.id, loadTicket.requesterId, loadTicket.description, loadTicket.priority);
+            }
+        }
+
+        fclose(arq);
+        fclose(temp);
+
+        remove("../../data/tickets.txt");
+        rename("../../data/temp.txt", "../data/tickets.txt");
+
+        system("cls");
+        printf("\n\n\nTicket #%d Attended Sucessfully!!\n\n\n", id);
+    }
 }
-void SimulateTickets()
-{
+void SimulateTickets(){
+    Ticket *newTicket = (Ticket *)malloc(sizeof(Ticket));
+    Queue *f = (Queue *)malloc(sizeof(Queue));
+    srand(time(NULL));
+    f->begin = NULL;
+    f->end = NULL;
+    f->tot = 0;
+    if (!newTicket)
+    {
+        printf("Error of Malloc.\n");
+        return;
+    }
+
+    int lastId = 0;
+    FILE *arq;
+    arq = fopen("../../data/tickets.txt", "r");
+
+    if (arq != NULL)
+    {
+        while (fscanf(arq, "%d;%d;%199[^;];%d\n",
+                      &newTicket->id, &newTicket->requesterId, newTicket->description, &newTicket->priority) != EOF)
+        {
+            lastId = newTicket->id;
+        }
+        fclose(arq);
+    }
+    newTicket->id = lastId + 1;
+    newTicket->requesterId = requestersIDs[rand() % 10];
+    strcpy(newTicket->description, SimulateDescription[rand() % 20]);
+    newTicket->priority = rand() % 5 + 1;
+
+    newTicket->next = NULL;
+    if (f->end == NULL)
+    {
+        f->begin = newTicket;
+    }
+    else
+    {
+        f->end->next = newTicket;
+    }
+    f->end = newTicket;
+    f->tot++;
+
+    arq = fopen("../../data/tickets.txt", "a");
+    if (arq == NULL)
+    {
+        printf("Failed to open file for writing.\n");
+        return;
+    }
+    fprintf(arq, "%d;%d;%s;%d\n", newTicket->id, newTicket->requesterId, newTicket->description, newTicket->priority);
+    fclose(arq);
+    printf("\nTicket #%d added sucessfully!\n\n", newTicket->id);
+    return;
+
 }
 
+void SimulatePainel(){
+    srand(time(NULL));
+
+    printf("\n=== Starting Help Desk Simulation Panel ===\n");
+    while (1) {
+        printf("\n--- Step %d ---\n", step + 1);
+
+        // 1️⃣ A cada iteração, 50% de chance de novo ticket
+        if (rand() % 2 == 0) {
+            printf("\n📨 New ticket received!\n");
+            SimulateTickets();
+        }
+
+        // 2️⃣ A cada 2 iterações, tenta atender um ticket
+        if (step % 2 == 1) {
+            printf("\n🧑‍🔧 Attending next ticket...\n");
+            AttendNextTicket();
+        }
+
+        // 3️⃣ Exibe status atual da fila
+        printf("\n📋 Current queue:\n");
+        ShowQueue(); // pode ser só leitura do arquivo ou ponteiro de fila
+
+        // 4️⃣ Espera 3 segundos (ajuste conforme o ritmo que quiser)
+        Sleep(3000);
+
+        step++;
+        if (step > 10) break; // simula 10 ciclos
+    }
+
+    printf("\n=== Simulation ended ===\n");
+}
+}
 int main()
 {
     int op, id;
-    Fila fila = {NULL, NULL, 0};
+    Queue queue = {NULL, NULL, 0};
 
     printf("\n==Support System==\n");
     do
@@ -218,7 +348,7 @@ int main()
             break;
         case 1:
             system("cls");
-            AddTicket(&fila);
+            AddTicket(&queue);
             break;
         case 2:
             system("cls");
@@ -240,6 +370,7 @@ int main()
             AttendTicketById(id);
         break;
         case 10:
+        system("cls");
         SimulateTickets();
             break;
         }
