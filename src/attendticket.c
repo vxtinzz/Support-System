@@ -55,6 +55,14 @@ void AttendNextTicket(){
             }
             aux = aux->next;
         }
+        aux = f->begin;
+        while (aux != NULL)
+        {
+            Ticket *tmp = aux;
+            aux = aux->next;
+            free(tmp);
+        }
+        free(f);
         fclose(arq);
         fclose(temp);
 
@@ -64,4 +72,5 @@ void AttendNextTicket(){
         system("cls");
         printf("\n\n\nTicket #%d Attended Sucessfully!!\n\n\n", bigPriority->id);
     }
+
 }
