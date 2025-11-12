@@ -58,5 +58,7 @@ void SimulateTickets(){
     fclose(arq);
     printf("\nTicket #%d added sucessfully!\n\n", newTicket->id);
     return;
+    free(newTicket);
+    free(f);
 
 }
